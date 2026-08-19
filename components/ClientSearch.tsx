@@ -75,6 +75,11 @@ export default function ClientSearch() {
     const supabase = createClient()
 
     try {
+      // Ensure the session is fully hydrated from cookies before querying
+      // RLS-protected tables — without this, the first query after mount can
+      // race ahead of session restoration and go out unauthenticated.
+      await supabase.auth.getSession()
+
       // Get all persons with their encounters including case notes
       const { data: persons, error } = await supabase
         .from('persons')
