@@ -35,8 +35,8 @@ export default function EncounterHeatMap({ locations }: EncounterHeatMapProps) {
 
     // Initialize map
     try {
-      // Default center to Encinitas, CA
-      const defaultCenter: [number, number] = [-117.2915, 33.0370]
+      // Default center to San Diego, CA
+      const defaultCenter: [number, number] = [-117.1611, 32.7157]
       const defaultZoom = 12
 
       // If we have locations, center on the first one

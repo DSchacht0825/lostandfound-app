@@ -92,7 +92,6 @@ export const DISABILITY_TYPES = [
 
 export const REFERRAL_SOURCES = [
   'CRC',
-  'Encinitas Library',
   'HOPE',
   'PD (Police Department)',
   'Self',

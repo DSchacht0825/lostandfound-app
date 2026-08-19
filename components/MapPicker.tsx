@@ -40,10 +40,10 @@ export default function MapPicker({
 
     mapboxgl.accessToken = accessToken
 
-    // Initialize map centered on Encinitas or provided coordinates
+    // Initialize map centered on San Diego or provided coordinates
     const center: [number, number] = initialLatitude && initialLongitude
       ? [initialLongitude, initialLatitude]
-      : [-117.2915, 33.0370] // Encinitas, CA
+      : [-117.1611, 32.7157] // San Diego, CA
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,

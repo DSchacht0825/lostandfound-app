@@ -47,8 +47,7 @@ A comprehensive by-name list and service tracking system for Lost & Found Outrea
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/DSchacht0825/encinitas-street-reach.git
-cd encinitas-street-reach/encinitas-street-reach
+cd lost-and-found-app
 npm install
 ```
 
@@ -255,9 +254,8 @@ convert public/icon-512x512.png -resize 192x192 public/icon-192x192.png
 ## Support
 
 For issues or questions:
-1. Check GitHub Issues: https://github.com/DSchacht0825/encinitas-street-reach/issues
-2. Contact repository owner
-3. Review Supabase and Next.js documentation
+1. Contact repository owner
+2. Review Supabase and Next.js documentation
 
 ## License
 

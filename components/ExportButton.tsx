@@ -78,14 +78,14 @@ export default function ExportButton({
         : '_all_time'
 
       // Export three separate CSV files
-      exportToCSV(metrics, `encinitas_street_reach_summary${dateRange}.csv`)
+      exportToCSV(metrics, `lost_found_outreach_summary${dateRange}.csv`)
 
       setTimeout(() => {
-        exportToCSV(personsExport, `encinitas_street_reach_clients${dateRange}.csv`)
+        exportToCSV(personsExport, `lost_found_outreach_clients${dateRange}.csv`)
       }, 500)
 
       setTimeout(() => {
-        exportToCSV(encountersExport, `encinitas_street_reach_interactions${dateRange}.csv`)
+        exportToCSV(encountersExport, `lost_found_outreach_interactions${dateRange}.csv`)
       }, 1000)
 
       // Show success message

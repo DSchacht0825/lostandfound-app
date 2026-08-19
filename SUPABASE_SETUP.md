@@ -6,7 +6,7 @@
 2. Sign in or create a free account
 3. Click "New Project"
 4. Fill in the project details:
-   - **Project Name**: `encinitas-street-reach`
+   - **Project Name**: `lost-and-found-outreach`
    - **Database Password**: Create a strong password (save this!)
    - **Region**: Choose the closest region to you (e.g., `West US (North California)`)
    - **Pricing Plan**: Free tier is fine for development

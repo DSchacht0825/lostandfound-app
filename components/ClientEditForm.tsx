@@ -769,7 +769,7 @@ export default function ClientEditForm({ person }: ClientEditFormProps) {
                 className="h-4 w-4 text-gold-600 focus:ring-gold-500 border-gray-300 rounded"
               />
               <label className="ml-2 block text-sm text-gray-700">
-                Verbal ROI for Encinitas Approved
+                Verbal ROI Approved
               </label>
             </div>
             <p className="text-sm text-gray-500 mt-1 ml-6">
