@@ -236,6 +236,50 @@ export interface Database {
           updated_at?: string
         }
       }
+      encampments: {
+        Row: {
+          id: string
+          latitude: number
+          longitude: number
+          location_description: string | null
+          estimated_population: number | null
+          photo_url: string | null
+          notes: string | null
+          reported_by: string
+          person_id: string | null
+          status: 'active' | 'cleared'
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          latitude: number
+          longitude: number
+          location_description?: string | null
+          estimated_population?: number | null
+          photo_url?: string | null
+          notes?: string | null
+          reported_by: string
+          person_id?: string | null
+          status?: 'active' | 'cleared'
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          latitude?: number
+          longitude?: number
+          location_description?: string | null
+          estimated_population?: number | null
+          photo_url?: string | null
+          notes?: string | null
+          reported_by?: string
+          person_id?: string | null
+          status?: 'active' | 'cleared'
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

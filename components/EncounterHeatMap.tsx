@@ -10,11 +10,21 @@ interface Location {
   date: string
 }
 
-interface EncounterHeatMapProps {
-  locations: Location[]
+interface EncampmentLocation {
+  latitude: number
+  longitude: number
+  locationDescription: string | null
+  notes: string | null
+  reportedBy: string
+  createdAt: string
 }
 
-export default function EncounterHeatMap({ locations }: EncounterHeatMapProps) {
+interface EncounterHeatMapProps {
+  locations: Location[]
+  encampments?: EncampmentLocation[]
+}
+
+export default function EncounterHeatMap({ locations, encampments = [] }: EncounterHeatMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const [mapError, setMapError] = useState<string | null>(null)
@@ -40,10 +50,10 @@ export default function EncounterHeatMap({ locations }: EncounterHeatMapProps) {
       const defaultZoom = 12
 
       // If we have locations, center on the first one
-      const center: [number, number] =
-        locations.length > 0
-          ? [locations[0].longitude, locations[0].latitude]
-          : defaultCenter
+      const firstPoint = locations[0] || encampments[0]
+      const center: [number, number] = firstPoint
+        ? [firstPoint.longitude, firstPoint.latitude]
+        : defaultCenter
 
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
@@ -179,6 +189,72 @@ export default function EncounterHeatMap({ locations }: EncounterHeatMapProps) {
         map.current?.on('mouseleave', 'unclustered-point', () => {
           if (map.current) map.current.getCanvas().style.cursor = ''
         })
+
+        // Encampments: separate source/layer, distinct color, not clustered
+        // (they're discrete sites, worth showing individually)
+        const encampmentGeojson: GeoJSON.FeatureCollection<GeoJSON.Point> = {
+          type: 'FeatureCollection',
+          features: encampments.map((camp) => ({
+            type: 'Feature',
+            properties: {
+              locationDescription: camp.locationDescription,
+              notes: camp.notes,
+              reportedBy: camp.reportedBy,
+              createdAt: camp.createdAt,
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: [camp.longitude, camp.latitude],
+            },
+          })),
+        }
+
+        map.current?.addSource('encampments', {
+          type: 'geojson',
+          data: encampmentGeojson,
+        })
+
+        map.current?.addLayer({
+          id: 'encampment-points',
+          type: 'circle',
+          source: 'encampments',
+          paint: {
+            'circle-color': '#ea580c',
+            'circle-radius': 9,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#fff',
+          },
+        })
+
+        map.current?.on('click', 'encampment-points', (e) => {
+          if (!map.current || !e.features || e.features.length === 0) return
+
+          const coordinates = (e.features[0].geometry as GeoJSON.Point).coordinates as [number, number]
+          const props = e.features[0].properties || {}
+          const description = props.locationDescription
+            ? `<p class="text-sm text-gray-700">${props.locationDescription}</p>`
+            : ''
+          const notes = props.notes
+            ? `<p class="text-sm text-gray-600 mt-1">${props.notes}</p>`
+            : ''
+          const date = props.createdAt
+            ? new Date(props.createdAt as string).toLocaleDateString()
+            : ''
+
+          new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(
+              `<p class="font-medium">🏕️ Encampment</p>${description}${notes}<p class="text-xs text-gray-500 mt-1">Reported by ${props.reportedBy} • ${date}</p>`
+            )
+            .addTo(map.current)
+        })
+
+        map.current?.on('mouseenter', 'encampment-points', () => {
+          if (map.current) map.current.getCanvas().style.cursor = 'pointer'
+        })
+        map.current?.on('mouseleave', 'encampment-points', () => {
+          if (map.current) map.current.getCanvas().style.cursor = ''
+        })
       })
     } catch (error) {
       console.error('Map initialization error:', error)
@@ -188,7 +264,7 @@ export default function EncounterHeatMap({ locations }: EncounterHeatMapProps) {
     return () => {
       map.current?.remove()
     }
-  }, [locations])
+  }, [locations, encampments])
 
   if (mapError) {
     return (
@@ -224,7 +300,7 @@ export default function EncounterHeatMap({ locations }: EncounterHeatMapProps) {
     )
   }
 
-  if (locations.length === 0) {
+  if (locations.length === 0 && encampments.length === 0) {
     return (
       <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">
         <div className="text-center">
@@ -247,9 +323,9 @@ export default function EncounterHeatMap({ locations }: EncounterHeatMapProps) {
               d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-          <p className="text-gray-600">No service interactions with GPS data yet</p>
+          <p className="text-gray-600">No service interactions or encampment reports with GPS data yet</p>
           <p className="text-sm text-gray-500 mt-2">
-            Locations will appear here as you record service interactions
+            Locations will appear here as you record service interactions or encampment reports
           </p>
         </div>
       </div>
@@ -259,9 +335,23 @@ export default function EncounterHeatMap({ locations }: EncounterHeatMapProps) {
   return (
     <div>
       <div ref={mapContainer} className="h-96 rounded-lg" />
-      <p className="text-sm text-gray-600 mt-3">
-        Showing {locations.length} service interaction{locations.length !== 1 ? 's' : ''}{' '}
-        on map. Click clusters to expand, click individual points for details.
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-6 mt-3">
+        <div className="flex items-center gap-2">
+          <span className="inline-block w-3 h-3 rounded-full bg-gold-600 border-2 border-white shadow"></span>
+          <span className="text-sm text-gray-700">Service Interaction</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="inline-block w-3 h-3 rounded-full bg-orange-600 border-2 border-white shadow"></span>
+          <span className="text-sm text-gray-700">Encampment</span>
+        </div>
+      </div>
+
+      <p className="text-sm text-gray-600 mt-2">
+        Showing {locations.length} service interaction{locations.length !== 1 ? 's' : ''} and{' '}
+        {encampments.length} encampment report{encampments.length !== 1 ? 's' : ''} on map. Click clusters to
+        expand, click individual points for details.
       </p>
     </div>
   )

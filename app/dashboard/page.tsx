@@ -73,8 +73,14 @@ export default async function DashboardPage({
     .from('status_changes')
     .select('*')
 
-  if (encountersError || personsError || allEncountersError || statusChangesError) {
-    console.error('Dashboard data fetch error:', encountersError || personsError || allEncountersError || statusChangesError)
+  // Fetch encampment reports for the map
+  const { data: encampmentsData, error: encampmentsError } = await supabase
+    .from('encampments')
+    .select('*')
+    .eq('status', 'active')
+
+  if (encountersError || personsError || allEncountersError || statusChangesError || encampmentsError) {
+    console.error('Dashboard data fetch error:', encountersError || personsError || allEncountersError || statusChangesError || encampmentsError)
   }
 
   // Type assertions for Supabase data (all fields from database)
@@ -341,6 +347,26 @@ export default async function DashboardPage({
       latitude: e.latitude,
       longitude: e.longitude,
       date: e.service_date,
+    }))
+
+  // Encampment coordinates for heat map
+  type EncampmentData = {
+    latitude: number
+    longitude: number
+    location_description: string | null
+    notes: string | null
+    reported_by: string
+    created_at: string
+  }
+  const encampmentLocations = ((encampmentsData || []) as EncampmentData[])
+    .filter((e) => e.latitude && e.longitude)
+    .map((e) => ({
+      latitude: e.latitude,
+      longitude: e.longitude,
+      locationDescription: e.location_description,
+      notes: e.notes,
+      reportedBy: e.reported_by,
+      createdAt: e.created_at,
     }))
 
   return (
@@ -821,7 +847,7 @@ export default async function DashboardPage({
         {/* Heat Map */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h3 className="text-lg font-semibold mb-4">Service Interaction Heat Map</h3>
-          <EncounterHeatMap locations={encounterLocations} />
+          <EncounterHeatMap locations={encounterLocations} encampments={encampmentLocations} />
         </div>
 
         {/* Export Button */}

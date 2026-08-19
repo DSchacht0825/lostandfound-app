@@ -208,6 +208,25 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                 New Service Interaction
               </Link>
             )}
+            <Link
+              href={`/encampment/new?personId=${id}&personName=${encodeURIComponent(`${person.first_name} ${person.last_name}`)}`}
+              className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium inline-flex items-center"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 15l4-8 4 6 3-4 5 6M3 19h18"
+                />
+              </svg>
+              Encampment
+            </Link>
             <ExitProgramButton
               personId={person.id}
               personName={`${person.first_name} ${person.last_name}`}
