@@ -231,12 +231,20 @@ export default function ClientSearch() {
             ? `Showing ${filteredPersons.length} exited clients`
             : `Showing ${filteredPersons.length} of ${allPersons.length} clients`}
         </span>
-        <Link
-          href="/client/new"
-          className="text-gold-600 hover:text-gold-700 font-medium"
-        >
-          + New Client
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/encampment/new"
+            className="text-orange-600 hover:text-orange-700 font-medium"
+          >
+            + Encampment
+          </Link>
+          <Link
+            href="/client/new"
+            className="text-gold-600 hover:text-gold-700 font-medium"
+          >
+            + New Client
+          </Link>
+        </div>
       </div>
 
       {/* Results List */}
