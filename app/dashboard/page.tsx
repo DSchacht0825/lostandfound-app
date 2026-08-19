@@ -706,6 +706,7 @@ export default async function DashboardPage({
           metrics={metrics}
           persons={personsInRange}
           encounters={allEncounters}
+          encampments={encampmentsData || []}
           demographics={demographics}
         />
 

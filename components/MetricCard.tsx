@@ -8,6 +8,7 @@ interface DetailItem {
   date?: string
   location?: string
   details?: string
+  photoUrl?: string
 }
 
 interface MetricCardProps {
@@ -149,17 +150,27 @@ export default function MetricCard({
                   <h4 className="font-semibold text-gray-700 mb-3">Details</h4>
                   <div className="space-y-3">
                     {detailItems.map((item) => (
-                      <div key={item.id} className="border rounded-lg p-3 hover:bg-gray-50">
-                        <p className="font-medium text-gray-900">{item.name}</p>
-                        {item.date && (
-                          <p className="text-sm text-gray-500">Date: {item.date}</p>
+                      <div key={item.id} className="border rounded-lg p-3 hover:bg-gray-50 flex gap-3">
+                        {item.photoUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={item.photoUrl}
+                            alt=""
+                            className="w-16 h-16 rounded object-cover flex-shrink-0 border border-gray-200"
+                          />
                         )}
-                        {item.location && (
-                          <p className="text-sm text-gray-500">Location: {item.location}</p>
-                        )}
-                        {item.details && (
-                          <p className="text-sm text-gray-600 mt-1">{item.details}</p>
-                        )}
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900">{item.name}</p>
+                          {item.date && (
+                            <p className="text-sm text-gray-500">Date: {item.date}</p>
+                          )}
+                          {item.location && (
+                            <p className="text-sm text-gray-500">Location: {item.location}</p>
+                          )}
+                          {item.details && (
+                            <p className="text-sm text-gray-600 mt-1">{item.details}</p>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

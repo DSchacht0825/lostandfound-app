@@ -36,6 +36,18 @@ interface Encounter {
   placement_location?: string | null
 }
 
+interface Encampment {
+  id: string
+  latitude: number
+  longitude: number
+  location_description: string | null
+  estimated_population: number | null
+  notes: string | null
+  reported_by: string
+  photo_url: string | null
+  created_at: string
+}
+
 interface MetricsGridProps {
   metrics: {
     unduplicatedIndividuals: number
@@ -49,13 +61,14 @@ interface MetricsGridProps {
   }
   persons: Person[]
   encounters: Encounter[]
+  encampments?: Encampment[]
   demographics: {
     byGender: Record<string, number>
     byRace: Record<string, number>
   }
 }
 
-export default function MetricsGrid({ metrics, persons, encounters, demographics }: MetricsGridProps) {
+export default function MetricsGrid({ metrics, persons, encounters, encampments = [], demographics }: MetricsGridProps) {
   // Build detail items for each metric
   const clientDetails = persons.map(p => ({
     id: p.id,
@@ -146,6 +159,19 @@ export default function MetricsGrid({ metrics, persons, encounters, demographics
       date: new Date(e.service_date).toLocaleDateString(),
       details: e.placement_location || 'Placement',
     }))
+
+  const encampmentDetails = encampments.map(camp => ({
+    id: camp.id,
+    name: camp.location_description || `${camp.latitude.toFixed(4)}, ${camp.longitude.toFixed(4)}`,
+    date: new Date(camp.created_at).toLocaleDateString(),
+    location: `${camp.latitude.toFixed(6)}, ${camp.longitude.toFixed(6)}`,
+    details: [
+      camp.estimated_population != null ? `~${camp.estimated_population} people` : '',
+      camp.notes || '',
+      `Reported by ${camp.reported_by}`,
+    ].filter(Boolean).join(' | '),
+    photoUrl: camp.photo_url || undefined,
+  }))
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -252,6 +278,19 @@ export default function MetricsGrid({ metrics, persons, encounters, demographics
         icon={
           <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+        }
+      />
+
+      <MetricCard
+        title="Encampments"
+        value={encampments.length}
+        color="orange"
+        detailItems={encampmentDetails}
+        detailTitle="Encampment Reports"
+        icon={
+          <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15l4-8 4 6 3-4 5 6M3 19h18" />
           </svg>
         }
       />
